@@ -1,0 +1,15 @@
+{
+  "query": "Ab.mp4",
+  "expected_state": "KNOWN",
+  "expected_track": "Ab",
+  "sample_duration": 8.0,
+  "sample_start_position": 18.691814058956915,
+  "degradation": "REVERB",
+  "predicted_track": "Ab",
+  "best_score": 11,
+  "second_best_score": 1,
+  "margin": 10,
+  "decision": "MATCH",
+  "correct_decision": true,
+  "processing_time": 0.4
+}

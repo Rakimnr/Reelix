@@ -8,31 +8,55 @@ The biggest product risk is not the floating bubble itself; it is whether Reelix
 
 ---
 
-## Milestone 0 — Recognition Feasibility Spike
-**Goal:** Validate the core product assumption before building the complete Android scanner.
+## MILESTONE 0A — Visual Matching Spike
+**STATUS: COMPLETED**
 
-### Tasks
-- Create a small local test harness/script/app endpoint that accepts:
-  - 4–8 frames
-  - OCR text
-  - optional lawful audio/transcript evidence
-- Prepare a rights-cleared evaluation set.
-- Integrate one zero-cost/approved candidate-generation approach or mockable provider interface.
-- Add movie/TV metadata lookup for candidate verification if terms permit prototype usage.
-- Return:
-  - strong candidate
-  - possible candidates
-  - no reliable match
-- Track Top-1, Top-3, false positives, no-match behavior, latency, and provider usage.
+**Achievements:**
+- OpenCLIP embeddings working locally
+- FAISS reference index working
+- Reel degradation simulation working
+- 5 indexed clips recovered successfully
+- NO_MATCH layer implemented
 
-### Acceptance Criteria
-- We have measured recognition results on a documented test set.
-- Hallucinations/false positives are visible in the metrics.
-- We know whether the first recognition approach is worth integrating into the full app.
-- No uncalibrated confidence percentage is used as ground truth.
+---
 
-### Exit Decision
-If recognition is unusable, improve/switch the recognition approach before spending time polishing the Android scanner.
+## MILESTONE 0B — Visual Threshold Calibration
+**STATUS: COMPLETED / CONTINUING VALIDATION**
+
+**Current calibration:**
+- Known: 0.7227–0.8841
+- Unknown: 0.6023–0.6925
+- No overlap in current small dataset.
+
+**Important:**
+No production threshold selected yet.
+
+---
+
+## MILESTONE 0C — OCR Supporting Evidence
+**FUTURE**
+
+**Goal:** Test whether subtitle/visible text improves difficult movie/TV matches.
+
+---
+
+## MILESTONE 0D — Local Music Identification Spike
+**FUTURE**
+
+**Goal:** Prove that a short audio sample can identify one song from a small local authorized music fingerprint catalogue.
+
+- No cloud.
+- No paid API.
+- No API key.
+
+The experiment should eventually test:
+- clean song sample
+- noisy sample
+- music under dialogue where possible
+- compressed Reel-style audio
+- possibly short segments
+
+*Do NOT implement this spike now unless explicitly instructed later.*
 
 ---
 

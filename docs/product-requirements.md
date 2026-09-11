@@ -1,11 +1,14 @@
 # Reelix — Product Requirements
 
 ## 1. Product Overview
-Reelix is an Android-first application that helps users identify movies and TV series appearing in short-form social-media videos without requiring them to manually save the Reel or upload a full recording.
+Reelix is an Android-first application that helps users identify movies, TV series, and music appearing in short-form social-media videos without requiring them to manually save the Reel or upload a full recording.
 
-The primary interaction is a floating, draggable Reelix bubble displayed over supported apps. After the user explicitly enables a screen-capture session, they can tap the bubble when an unknown movie/TV scene appears. Reelix temporarily samples a short portion of the visible screen, extracts useful evidence, analyzes it, displays likely matches, and discards the raw capture data.
+The main Reelix product concept is:
+*"Tap Reelix on a Reel to identify what you are watching, what you are hearing, and optionally assess whether the content may be AI-generated."*
 
-Reelix also includes a separate experimental feature that assesses whether a social-media video may contain AI-generated or heavily AI-edited content. This feature must communicate uncertainty and must never present an unsupported “100% real/fake” verdict.
+The primary interaction is a floating, draggable Reelix bubble displayed over supported apps. After the user explicitly enables a screen-capture session, they can tap the bubble when an unknown scene or song appears. Reelix temporarily samples a short portion of the visible screen and playback audio, extracts useful evidence, analyzes it across independent recognition branches (Movie/TV and Music), displays likely matches, and discards the raw capture data.
+
+Reelix also includes an optional experimental feature that assesses whether a social-media video may contain AI-generated or heavily AI-edited content. This feature must communicate uncertainty and must never present an unsupported “100% real/fake” verdict.
 
 ## 2. Product Goals
 1. Make movie/TV identification from Reels extremely fast.

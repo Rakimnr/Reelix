@@ -1,0 +1,15 @@
+{
+  "query": "Ab.mp4",
+  "expected_state": "KNOWN",
+  "expected_track": "Ab",
+  "sample_duration": 8.0,
+  "sample_start_position": 28.037721088435372,
+  "degradation": "SPEED_UP",
+  "predicted_track": "kara",
+  "best_score": 1,
+  "second_best_score": 1,
+  "margin": 0,
+  "decision": "NO_MATCH",
+  "correct_decision": false,
+  "processing_time": 0.14
+}

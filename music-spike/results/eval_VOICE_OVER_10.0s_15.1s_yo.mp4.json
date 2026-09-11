@@ -1,0 +1,15 @@
+{
+  "query": "yo.mp4",
+  "expected_state": "KNOWN",
+  "expected_track": "yo",
+  "sample_duration": 10.0,
+  "sample_start_position": 15.11451247165533,
+  "degradation": "VOICE_OVER",
+  "predicted_track": "yo",
+  "best_score": 162,
+  "second_best_score": 3,
+  "margin": 159,
+  "decision": "MATCH",
+  "correct_decision": true,
+  "processing_time": 0.18
+}

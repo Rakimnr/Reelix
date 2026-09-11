@@ -1,0 +1,15 @@
+{
+  "query": "kara.mp4",
+  "expected_state": "KNOWN",
+  "expected_track": "kara",
+  "sample_duration": 8.0,
+  "sample_start_position": 7.337505668934241,
+  "degradation": "LIGHT",
+  "predicted_track": "kara",
+  "best_score": 561,
+  "second_best_score": 1,
+  "margin": 560,
+  "decision": "MATCH",
+  "correct_decision": true,
+  "processing_time": 0.15
+}

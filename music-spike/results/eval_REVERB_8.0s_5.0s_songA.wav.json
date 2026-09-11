@@ -1,0 +1,15 @@
+{
+  "query": "songA.wav",
+  "expected_state": "KNOWN",
+  "expected_track": "songA",
+  "sample_duration": 8.0,
+  "sample_start_position": 5.0,
+  "degradation": "REVERB",
+  "predicted_track": "songC",
+  "best_score": 3,
+  "second_best_score": 1,
+  "margin": 2,
+  "decision": "NO_MATCH",
+  "correct_decision": false,
+  "processing_time": 0.28
+}

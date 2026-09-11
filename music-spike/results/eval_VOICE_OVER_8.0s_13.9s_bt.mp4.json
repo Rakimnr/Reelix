@@ -1,0 +1,15 @@
+{
+  "query": "bt.mp4",
+  "expected_state": "KNOWN",
+  "expected_track": "bt",
+  "sample_duration": 8.0,
+  "sample_start_position": 13.931723356009071,
+  "degradation": "VOICE_OVER",
+  "predicted_track": "bt",
+  "best_score": 40,
+  "second_best_score": 1,
+  "margin": 39,
+  "decision": "MATCH",
+  "correct_decision": true,
+  "processing_time": 0.16
+}

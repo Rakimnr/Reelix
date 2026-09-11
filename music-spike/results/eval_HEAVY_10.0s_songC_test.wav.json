@@ -1,0 +1,15 @@
+{
+  "query": "songC_test.wav",
+  "expected_state": "KNOWN",
+  "expected_track": "songC",
+  "sample_duration": 10.0,
+  "sample_start_position": 10.0,
+  "degradation": "HEAVY",
+  "predicted_track": "songB",
+  "best_score": 2,
+  "second_best_score": 1,
+  "margin": 1,
+  "decision": "NO_MATCH",
+  "correct_decision": false,
+  "processing_time": 0.03
+}

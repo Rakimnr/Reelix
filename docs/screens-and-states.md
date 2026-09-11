@@ -183,15 +183,28 @@ Keep the menu compact so it does not obstruct the underlying content more than n
 
 ---
 
-## 10. Compact Identification Result — Strong Candidate
+## 10. Unified Compact Result Overlay
 **Type:** Overlay attached/near bubble
 
-**Content:**
+**Content Structure:**
+The overlay should support independent sections/cards for whatever was identified.
+
+**MOVIE / TV**
 - poster thumbnail
 - title
 - year/release information
+- possible series/episode information
 - wording such as **Strong candidate** or **Likely match**
-- optional evidence chips (e.g., Visual, Subtitle) only when actually used
+- match state
+
+**MUSIC**
+- song title
+- artist
+- album/artwork later if available
+- match state
+
+**AI CONTENT**
+- separate experimental assessment
 
 **Actions:**
 - Details

@@ -61,12 +61,16 @@ If the user denies screen capture, Reelix shows a clear explanation and returns 
 10. Reelix builds a minimal evidence package.
 11. Bubble changes to **Processing** state.
 12. Evidence is sent to the Reelix backend for analysis.
-13. Backend generates candidate titles and verifies them using available evidence/metadata.
-14. Backend returns one of:
-    - strong candidate
-    - several possible candidates
-    - no reliable match
-15. Reelix displays the Compact Result Overlay.
+13. Backend routes evidence to independent recognition branches:
+    - Visual/OCR/dialogue goes to Movie/TV matching.
+    - Playback audio goes to Music matching.
+14. Backend returns whatever was found:
+    - Movie found + music found
+    - Movie found + no music identified
+    - No movie match + music found
+    - Movie found + music unavailable
+    - Neither identified
+15. Reelix displays the Unified Compact Result Overlay.
 16. Raw frame/audio buffers are released and any temp cache file is deleted.
 17. Bubble returns to idle after the result is dismissed.
 

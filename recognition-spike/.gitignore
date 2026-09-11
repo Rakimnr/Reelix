@@ -1,0 +1,11 @@
+__pycache__/
+venv/
+extracted/
+index/
+results/
+references/*.mp4
+references/*.mov
+references/*.mkv
+queries/*.mp4
+queries/*.mov
+queries/*.mkv

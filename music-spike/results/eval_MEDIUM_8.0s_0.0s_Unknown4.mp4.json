@@ -1,0 +1,15 @@
+{
+  "query": "Unknown4.mp4",
+  "expected_state": "UNKNOWN",
+  "expected_track": "",
+  "sample_duration": 8.0,
+  "sample_start_position": 0.0,
+  "degradation": "MEDIUM",
+  "predicted_track": "kara",
+  "best_score": 2,
+  "second_best_score": 1,
+  "margin": 1,
+  "decision": "NO_MATCH",
+  "correct_decision": true,
+  "processing_time": 0.13
+}

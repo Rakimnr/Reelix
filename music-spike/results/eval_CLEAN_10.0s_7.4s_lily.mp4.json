@@ -1,0 +1,15 @@
+{
+  "query": "lily.mp4",
+  "expected_state": "KNOWN",
+  "expected_track": "lily",
+  "sample_duration": 10.0,
+  "sample_start_position": 7.365340136054422,
+  "degradation": "CLEAN",
+  "predicted_track": "lily",
+  "best_score": 303,
+  "second_best_score": 3,
+  "margin": 300,
+  "decision": "MATCH",
+  "correct_decision": true,
+  "processing_time": 0.15
+}

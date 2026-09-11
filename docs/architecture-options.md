@@ -219,59 +219,53 @@ No raw sample is written to public Gallery/Downloads.
 ---
 
 ## 9. Identification Architecture Options
-### Option 1 — External Multimodal Recognition + Candidate Verification
+
+### Option 1 — Hybrid Architecture (Reelix Index + Optional AI Fallback)
 **Concept**
-Send a minimal evidence package to a Reelix-controlled backend. The backend asks a multimodal recognition model for possible titles, obtains metadata for candidates, and applies verification logic before returning results.
+Extract compact fingerprints (visual/audio) and OCR text locally. The backend searches a Reelix-owned index of mathematical representations (vectors, hashes). If the index yields a high-confidence match, return it. Only if the index fails, optionally fall back to an external Multimodal AI to attempt identification.
 
 **Advantages**
-- No massive scene index needed initially.
-- Fastest route to testing the product assumption.
-- Near-zero infrastructure can be used during development if a permitted free API tier/local mock is available.
+- Fast and cheap for popular, indexed titles.
+- Better exact-scene/episode matching.
+- Does not rely on expensive third-party APIs for every scan.
+- Allows Reelix to own its recognition intelligence incrementally.
 
 **Risks**
-- Hallucinated titles.
-- Weak performance on obscure/new titles.
-- Poor exact episode/scene identification.
-- Per-request costs/quotas at scale.
-- Provider privacy/data-processing considerations.
+- Requires building and hosting a searchable index (e.g., FAISS, `pgvector`).
+- Indexing content requires a lawful acquisition strategy (no scraping copyrighted movies).
 
-**Status:** First recognition feasibility path.
+**Status:** Recommended target architecture. See `recognition-architecture.md` for details.
 
-### Option 2 — Licensed ACR / Reference Index
+### Option 2 — External Multimodal Recognition Only
 **Concept**
-Use a commercial Automatic Content Recognition provider or licensed fingerprint/reference dataset.
+Send the evidence package to an external multimodal AI model (e.g., Gemini, GPT-4o) and ask it to guess the movie for every single scan.
 
 **Advantages**
-- More deterministic matching for indexed content.
-- Better exact scene/timestamp potential.
-- Lower hallucination risk.
+- No need to build or maintain a scene index initially.
 
 **Risks**
-- Commercial licensing and provider negotiation.
-- Not compatible with a guaranteed zero-cost production plan.
+- High hallucination risk.
+- Poor exact episode identification.
+- Expensive per-scan at scale; not sustainable for a free app.
+- Poses privacy concerns by sending all captures to a third party.
 
-**Status:** Production candidate if validation justifies it.
+**Status:** Deprecated as the primary core architecture. May only be used as a fallback.
 
-### Option 3 — Reelix-Owned Lawful Fingerprint Index + AI Fallback
+### Option 3 — Licensed ACR (Automatic Content Recognition)
 **Concept**
-Maintain fingerprints/embeddings only for content Reelix has a lawful basis to index. Search the deterministic index first, then use AI when no suitable match is found.
+Partner with a commercial ACR provider who already maintains a massive movie fingerprint database.
 
 **Advantages**
-- Reduced AI cost for indexed titles.
-- Better exact matching.
-- Less dependency on one provider.
+- Highly accurate out-of-the-box.
 
 **Risks**
-- Licensing/content-acquisition complexity.
-- Compute/storage/search infrastructure.
-- Operational burden.
+- Extremely expensive commercial licensing. Violates the near-zero budget constraint.
 
-**Status:** Future option, not MVP infrastructure.
+**Status:** Rejected for early development phases.
 
-### Recommended evolution
-**Recognition feasibility:** Option 1  
-**Production evaluation:** Option 1 vs Option 2  
-**Long-term:** Hybrid Option 2/3 + AI fallback if justified
+### Recommended Evolution
+**Feasibility Spike:** Option 1 (Hybrid) using a tiny local FAISS index with public-domain test clips.
+**Production:** Option 1 (Hybrid) with a gradually expanding catalogue based on user demand.
 
 ---
 
