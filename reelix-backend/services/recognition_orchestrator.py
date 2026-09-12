@@ -1,4 +1,5 @@
 from typing import List, Optional, Dict, Any
+import config
 from providers.local_movie_provider import LocalMovieProvider
 from providers.google_web_movie_provider import GoogleWebMovieProvider
 from providers.local_music_provider import LocalMusicProvider
@@ -25,14 +26,21 @@ class RecognitionOrchestrator:
         self.local_movie.initialize()
         self.local_music.initialize()
         
+    def _get_provider_health(self, enabled: bool, has_creds: bool) -> str:
+        if not enabled:
+            return "disabled_by_config"
+        if not has_creds:
+            return "error_missing_credentials"
+        return "ready"
+        
     def get_health(self) -> Dict[str, Any]:
         return {
             "status": "ok",
             "providers": {
                 "local_movie": "ready" if self.local_movie._is_ready else "not_ready",
                 "local_music": "ready" if self.local_music._is_ready else "not_ready",
-                "google_web_movie": "ready" if self.external_movie.is_enabled() else "disabled_by_config",
-                "audd_music": "ready" if self.external_music.is_enabled() else "disabled_by_config",
+                "google_web_movie": self._get_provider_health(config.GOOGLE_WEB_DETECTION_ENABLED, bool(config.GOOGLE_API_KEY)),
+                "audd_music": self._get_provider_health(config.AUDD_ENABLED, bool(config.AUDD_API_TOKEN)),
                 "tmdb_metadata": "enabled" if self.metadata_service.is_enabled() else "disabled_no_token"
             }
         }
@@ -48,16 +56,32 @@ class RecognitionOrchestrator:
             best_frame, score, reason = self.frame_selector.select_best_frame(frame_paths)
             ext_result = self.external_movie.recognize([best_frame])
             
-            if ext_result.state != "SKIPPED":
-                # Assuming ocr_evidence might be fetched or used later
+            if ext_result.state not in ["SKIPPED", "ERROR"]:
+                # Assuming local_result might have some OCR evidence
                 candidates = self.candidate_extractor.extract(ext_result, "")
+                print(f"[EXTERNAL_MOVIE] candidates={len(candidates)}")
+                
                 if candidates:
-                    # In a real scenario, this resolves to a canonical title
-                    resolved_meta = self.metadata_service.resolve_candidate(candidates[0].title)
+                    candidate_titles = [c.title for c in candidates]
+                    resolved_meta = self.metadata_service.resolve_candidates(candidate_titles)
+                    
                     if resolved_meta:
                         ext_result.metadata = resolved_meta
-                        ext_result.title = resolved_meta.get("canonical_title", candidates[0].title)
-                        ext_result.state = "MATCH"
+                        ext_result.title = resolved_meta.get("canonical_title", candidate_titles[0])
+                        
+                        # Decision logic
+                        best_candidate = next((c for c in candidates if c.title.lower() == ext_result.title.lower()), candidates[0])
+                        
+                        if len(best_candidate.sources) > 1:
+                            ext_result.state = "MATCH"
+                        else:
+                            ext_result.state = "POSSIBLE"
+                    else:
+                        ext_result.title = candidate_titles[0]
+                        ext_result.state = "POSSIBLE"
+                else:
+                    ext_result.state = "NO_MATCH"
+                
                 results.append(ext_result)
             
         fused = self.fusion_service.fuse_movie_results(results)
@@ -84,12 +108,12 @@ class RecognitionOrchestrator:
             result = local_result
         else:
             ext_result = self.external_music.recognize(audio_path)
-            if ext_result.state != "SKIPPED":
+            if ext_result.state not in ["SKIPPED", "ERROR"]:
                 result = ext_result
             else:
                 result = local_result
                 
-        if not result or result.state == "SKIPPED":
+        if not result or result.state in ["SKIPPED", "ERROR"]:
             return {
                 "state": "UNAVAILABLE",
                 "track": None,
@@ -97,9 +121,20 @@ class RecognitionOrchestrator:
                 "provider": "none"
             }
             
-        return {
+        # For external fields
+        return_data = {
             "state": result.state,
             "track": result.track,
             "score": result.score,
             "provider": result.provider
         }
+        
+        if result.provider == "audd_music":
+            return_data.update({
+                "artist": getattr(result, "artist", None),
+                "album": getattr(result, "album", None),
+                "release_date": getattr(result, "release_date", None),
+                "song_link": getattr(result, "song_link", None)
+            })
+            
+        return return_data

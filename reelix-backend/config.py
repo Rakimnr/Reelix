@@ -1,7 +1,13 @@
 import os
 
 GOOGLE_WEB_DETECTION_ENABLED = os.environ.get("GOOGLE_WEB_DETECTION_ENABLED", "false").lower() == "true"
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "")
+
 AUDD_ENABLED = os.environ.get("AUDD_ENABLED", "false").lower() == "true"
+AUDD_API_TOKEN = os.environ.get("AUDD_API_TOKEN", "")
+
+TMDB_BEARER_TOKEN = os.environ.get("TMDB_BEARER_TOKEN", "")
 
 MAX_EXTERNAL_MOVIE_FRAMES = 1
 EXTERNAL_MOVIE_FALLBACK_FRAMES = 1
+EXTERNAL_PROVIDER_TIMEOUT_SECONDS = int(os.environ.get("EXTERNAL_PROVIDER_TIMEOUT_SECONDS", "8"))

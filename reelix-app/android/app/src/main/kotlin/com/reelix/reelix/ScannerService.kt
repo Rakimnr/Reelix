@@ -628,9 +628,11 @@ class ScannerService : Service() {
                     .setBufferSizeInBytes(minBufferSize * 2)
                     .build()
                     
+                val durationMs = 6000L
+                Log.d(TAG, "[Reelix][AUDIO_CAPTURE] target_duration=${durationMs / 1000.0}s")
+                
                 audioRecord?.startRecording()
                 
-                val durationMs = 2000L
                 val maxSamples = (sampleRate * (durationMs / 1000.0)).toInt()
                 val buffer = ShortArray(maxSamples)
                 
