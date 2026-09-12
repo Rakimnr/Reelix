@@ -76,25 +76,14 @@ class MainActivity: FlutterActivity() {
                     }
                 }
                 "startScanner" -> {
-                    startMediaProjectionRequest(result)
+                    val url = call.argument<String>("url") ?: "http://10.0.2.2:8000"
+                    startScannerService(result, url)
                 }
                 "stopScanner" -> {
                     val intent = Intent(this, ScannerService::class.java)
                     intent.action = ScannerService.ACTION_STOP
                     startService(intent)
                     result.success(true)
-                }
-                "cleanupTemp" -> {
-                    val cacheDir = cacheDir
-                    val tempFiles = cacheDir.listFiles()
-                    var deleted = 0
-                    tempFiles?.forEach {
-                        if (it.name.startsWith("reelix_temp")) {
-                            it.delete()
-                            deleted++
-                        }
-                    }
-                    result.success(deleted)
                 }
                 else -> {
                     result.notImplemented()
@@ -105,14 +94,10 @@ class MainActivity: FlutterActivity() {
         val receiver = object : android.content.BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent?.action == "com.reelix.SCAN_RESULT") {
-                    val frames = intent.getStringArrayListExtra("frames")
-                    val audio = intent.getStringExtra("audio")
-                    
-                    val map = mapOf(
-                        "frames" to frames,
-                        "audio" to audio
-                    )
-                    MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).invokeMethod("onScanResult", map)
+                    val jsonStr = intent.getStringExtra("result_json")
+                    if (jsonStr != null) {
+                        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).invokeMethod("onScanResult", jsonStr)
+                    }
                 }
             }
         }
@@ -123,10 +108,17 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    private fun startMediaProjectionRequest(result: MethodChannel.Result) {
-        val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        startActivityForResult(projectionManager.createScreenCaptureIntent(), MEDIA_PROJECTION_REQ_CODE)
-        pendingResult = result
+    private fun startScannerService(result: MethodChannel.Result, url: String) {
+        val intent = Intent(this, ScannerService::class.java)
+        intent.action = ScannerService.ACTION_START
+        intent.putExtra("backend_url", url)
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+        result.success(true)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -134,24 +126,6 @@ class MainActivity: FlutterActivity() {
         when (requestCode) {
             OVERLAY_PERMISSION_REQ_CODE -> {
                 pendingResult?.success(Settings.canDrawOverlays(this))
-                pendingResult = null
-            }
-            MEDIA_PROJECTION_REQ_CODE -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    val intent = Intent(this, ScannerService::class.java)
-                    intent.action = ScannerService.ACTION_START
-                    intent.putExtra(ScannerService.EXTRA_RESULT_CODE, resultCode)
-                    intent.putExtra(ScannerService.EXTRA_RESULT_DATA, data)
-                    
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForegroundService(intent)
-                    } else {
-                        startService(intent)
-                    }
-                    pendingResult?.success(true)
-                } else {
-                    pendingResult?.success(false)
-                }
                 pendingResult = null
             }
         }

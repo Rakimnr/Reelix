@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +35,7 @@ class _ScannerStatusScreenState extends State<ScannerStatusScreen> {
   bool _notificationGranted = false;
   bool _scannerRunning = false;
   
-  final TextEditingController _backendUrlController = TextEditingController(text: "http://192.168.0.x:8000");
+  final TextEditingController _backendUrlController = TextEditingController(text: "http://127.0.0.1:8000");
 
   String? _lastResultMovie;
   String? _lastResultMusic;
@@ -49,63 +49,23 @@ class _ScannerStatusScreenState extends State<ScannerStatusScreen> {
   }
   
   Future<dynamic> _handleMethodCall(MethodCall call) async {
-    if (call.method == 'onScanResult') {
-      final args = Map<String, dynamic>.from(call.arguments);
-      final List<String> frames = List<String>.from(args['frames'] ?? []);
-      final String? audio = args['audio'];
-      
-      _uploadEvidence(frames, audio);
-    }
-  }
-
-  Future<void> _uploadEvidence(List<String> frames, String? audio) async {
-    final url = Uri.tryParse('${_backendUrlController.text}/recognize');
-    if (url == null) return;
-    
-    setState(() {
-      _lastResultMovie = "Uploading & Processing...";
-      _lastResultMusic = "...";
-      _lastProcessingTime = "...";
-    });
-
     try {
-      var request = http.MultipartRequest('POST', url);
-      
-      for (var framePath in frames) {
-        request.files.add(await http.MultipartFile.fromPath('frames', framePath));
-      }
-      
-      if (audio != null) {
-        request.files.add(await http.MultipartFile.fromPath('audio', audio));
-      }
-      
-      final startTime = DateTime.now();
-      var response = await request.send();
-      final roundTripMs = DateTime.now().difference(startTime).inMilliseconds;
-      
-      if (response.statusCode == 200) {
-        final respStr = await response.stream.bytesToString();
-        final json = jsonDecode(respStr);
+      if (call.method == 'onScanResult') {
+        final jsonStr = call.arguments as String;
+        final json = jsonDecode(jsonStr);
         
         setState(() {
           _lastResultMovie = "State: ${json['movie']['state']}\nTitle: ${json['movie']['title'] ?? 'N/A'}\nVisual Score: ${json['movie']['visual_score']}\nOCR Score: ${json['movie']['ocr_score']}";
           _lastResultMusic = "State: ${json['music']['state']}\nTrack: ${json['music']['track'] ?? 'N/A'}\nScore: ${json['music']['score']}";
-          _lastProcessingTime = "Backend Total: ${json['timing_ms']['total']} ms\nRound Trip: $roundTripMs ms";
-        });
-      } else {
-        setState(() {
-          _lastResultMovie = "Error: ${response.statusCode}";
+          _lastProcessingTime = "Backend Total: ${json['timing_ms']['total']} ms";
         });
       }
     } catch (e) {
-      setState(() {
-        _lastResultMovie = "Error: $e";
-      });
-    } finally {
-      // Clean up temp files on Android
-      await platform.invokeMethod('cleanupTemp');
+      debugPrint('[Reelix][UPLOAD] error handling method call: $e');
     }
   }
+
+
 
   Future<void> _checkPermissions() async {
     try {
@@ -151,7 +111,8 @@ class _ScannerStatusScreenState extends State<ScannerStatusScreen> {
 
   Future<void> _startScanner() async {
     try {
-      final bool result = await platform.invokeMethod('startScanner');
+      final backendUrl = _backendUrlController.text;
+      final bool result = await platform.invokeMethod('startScanner', {'url': backendUrl});
       if (result) {
         setState(() => _scannerRunning = true);
       }
